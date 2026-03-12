@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  name          String
+  documentPath  String
+  questions     String       // JSON array of { id, text }
+  shareSlug     String       @unique
+  createdAt     DateTime     @default(now())
+  submissions   Submission[]
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  taskId      String
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  studentName String
+  studentClass String
+  answers     String   // JSON object of { questionId: answer }
+  completedAt DateTime @default(now())
+}
