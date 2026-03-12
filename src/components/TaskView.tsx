@@ -16,14 +16,61 @@ interface TaskViewProps {
   slug: string;
 }
 
-const ENCOURAGEMENTS = [
-  "כל הכבוד! ממשיכים...",
-  "מצוין! עוד קצת...",
-  "יפה מאוד! שאלה הבאה...",
-  "סבבה! ממשיכים קדימה...",
-  "אש! שאלה נוספת...",
-  "מעולה! כמעט שם...",
+const QUESTION_COLORS = [
+  {
+    bg: "bg-pink-50", border: "border-pink-300", badge: "bg-pink-500",
+    glow: "shadow-pink-100", focusBorder: "focus:border-pink-400",
+    focusRing: "focus:ring-pink-100", textarea: "bg-pink-50/60",
+    btn: "bg-pink-500 hover:bg-pink-600 shadow-pink-200",
+    prevBtn: "border-pink-200 text-pink-600 hover:bg-pink-50",
+  },
+  {
+    bg: "bg-orange-50", border: "border-orange-300", badge: "bg-orange-500",
+    glow: "shadow-orange-100", focusBorder: "focus:border-orange-400",
+    focusRing: "focus:ring-orange-100", textarea: "bg-orange-50/60",
+    btn: "bg-orange-500 hover:bg-orange-600 shadow-orange-200",
+    prevBtn: "border-orange-200 text-orange-600 hover:bg-orange-50",
+  },
+  {
+    bg: "bg-emerald-50", border: "border-emerald-300", badge: "bg-emerald-500",
+    glow: "shadow-emerald-100", focusBorder: "focus:border-emerald-400",
+    focusRing: "focus:ring-emerald-100", textarea: "bg-emerald-50/60",
+    btn: "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200",
+    prevBtn: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
+  },
+  {
+    bg: "bg-sky-50", border: "border-sky-300", badge: "bg-sky-500",
+    glow: "shadow-sky-100", focusBorder: "focus:border-sky-400",
+    focusRing: "focus:ring-sky-100", textarea: "bg-sky-50/60",
+    btn: "bg-sky-500 hover:bg-sky-600 shadow-sky-200",
+    prevBtn: "border-sky-200 text-sky-600 hover:bg-sky-50",
+  },
+  {
+    bg: "bg-violet-50", border: "border-violet-300", badge: "bg-violet-500",
+    glow: "shadow-violet-100", focusBorder: "focus:border-violet-400",
+    focusRing: "focus:ring-violet-100", textarea: "bg-violet-50/60",
+    btn: "bg-violet-500 hover:bg-violet-600 shadow-violet-200",
+    prevBtn: "border-violet-200 text-violet-600 hover:bg-violet-50",
+  },
+  {
+    bg: "bg-yellow-50", border: "border-yellow-300", badge: "bg-yellow-500",
+    glow: "shadow-yellow-100", focusBorder: "focus:border-yellow-400",
+    focusRing: "focus:ring-yellow-100", textarea: "bg-yellow-50/60",
+    btn: "bg-yellow-500 hover:bg-yellow-600 shadow-yellow-200",
+    prevBtn: "border-yellow-200 text-yellow-600 hover:bg-yellow-50",
+  },
 ];
+
+const ENCOURAGEMENTS = [
+  { text: "כל הכבוד! ממשיכים קדימה!", icon: "⭐" },
+  { text: "מעולה! אתה עושה עבודה נהדרת!", icon: "🎉" },
+  { text: "יפה מאוד! עוד קצת!", icon: "🌟" },
+  { text: "סבבה! כמעט הגעת!", icon: "🚀" },
+  { text: "אחלה! שאלה נוספת!", icon: "💪" },
+  { text: "וואו, אתה ממש טוב בזה!", icon: "🔥" },
+];
+
+const QUESTION_ICONS = ["🦁", "🐬", "🦋", "🌈", "⚡", "🎯", "🌸", "🦄", "🐙", "🎸"];
 
 export function TaskView({
   taskName,
@@ -41,12 +88,13 @@ export function TaskView({
   const [animDir, setAnimDir] = useState<"right" | "left">("right");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [encouragement, setEncouragement] = useState<string | null>(null);
+  const [encouragement, setEncouragement] = useState<{ text: string; icon: string } | null>(null);
 
   const current = gameQuestions[currentIndex];
   const isLast = currentIndex === gameQuestions.length - 1;
   const isFirst = currentIndex === 0;
-  const progress = gameQuestions.length > 0 ? ((currentIndex + 1) / gameQuestions.length) * 100 : 100;
+  const color = QUESTION_COLORS[currentIndex % QUESTION_COLORS.length];
+  const questionIcon = QUESTION_ICONS[currentIndex % QUESTION_ICONS.length];
 
   const navigate = (dir: "next" | "prev") => {
     const nextIndex = dir === "next" ? currentIndex + 1 : currentIndex - 1;
@@ -54,8 +102,9 @@ export function TaskView({
     setAnimKey((k) => k + 1);
     setCurrentIndex(nextIndex);
     if (dir === "next") {
-      setEncouragement(ENCOURAGEMENTS[currentIndex % ENCOURAGEMENTS.length]);
-      setTimeout(() => setEncouragement(null), 1500);
+      const enc = ENCOURAGEMENTS[currentIndex % ENCOURAGEMENTS.length];
+      setEncouragement(enc);
+      setTimeout(() => setEncouragement(null), 1800);
     }
   };
 
@@ -67,7 +116,6 @@ export function TaskView({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentName, studentClass, answers }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "שגיאה בשליחת ההגשה");
       setSubmitted(true);
@@ -78,118 +126,139 @@ export function TaskView({
     }
   };
 
+  /* ── Success screen ── */
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center gap-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100 shadow-xl shadow-green-100">
-          <svg className="h-12 w-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+      <div className="flex flex-col items-center justify-center py-10 text-center gap-6">
+        <div className="text-8xl animate-bounce">🎊</div>
+        <div className="rounded-3xl bg-gradient-to-br from-green-400 to-emerald-500 p-8 shadow-2xl shadow-green-200 text-white">
+          <h3 className="text-3xl font-black mb-2">כל הכבוד!</h3>
+          <p className="text-xl font-semibold opacity-90">{studentName} סיים את המשימה!</p>
         </div>
-        <div>
-          <h3 className="text-2xl font-bold text-slate-900">ההגשה נשלחה!</h3>
-          <p className="mt-2 text-slate-500">תודה {studentName}, עבודתך נשמרה בהצלחה.</p>
+        <div className="flex gap-3 text-4xl">
+          <span>⭐</span><span>⭐</span><span>⭐</span>
         </div>
-        <p className="text-sm text-slate-400">ניתן לסגור את הדף</p>
+        <p className="text-slate-400 text-sm">אפשר לסגור את הדף</p>
       </div>
     );
   }
 
+  if (!current) return null;
+
+  const answeredCount = gameQuestions.filter((q) => answers[q.id]?.trim()).length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-l from-indigo-50 to-violet-50 border border-indigo-100 p-5">
-        <h2 className="text-xl font-bold text-slate-900">{taskName}</h2>
+      <div className="rounded-3xl bg-gradient-to-l from-purple-500 to-blue-500 p-5 text-white shadow-lg shadow-purple-200">
+        <h2 className="text-lg font-black">{taskName}</h2>
         <div className="mt-2 flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-200">
-            <svg className="h-3.5 w-3.5 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <p className="text-sm font-medium text-indigo-700">
-            {studentName} · {studentClass}
+          <span className="text-lg">👤</span>
+          <p className="text-sm font-semibold opacity-90">
+            {studentName} · כיתה {studentClass}
           </p>
         </div>
       </div>
 
       {/* Main text passage */}
       {mainText && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+        <div className="rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 p-5 shadow-md shadow-amber-100">
           <div className="flex items-center gap-2 mb-3">
-            <svg className="h-4 w-4 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-            <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">קרא את הטקסט הבא</span>
+            <span className="text-2xl">📖</span>
+            <span className="text-sm font-black text-amber-700 uppercase tracking-wide">קרא את הטקסט הבא</span>
           </div>
-          <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{mainText.text}</p>
+          <p className="text-sm text-slate-800 leading-loose whitespace-pre-wrap font-medium">{mainText.text}</p>
         </div>
       )}
 
-      {/* Progress */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-medium text-slate-600">
-            שאלה {currentIndex + 1} מתוך {gameQuestions.length}
+      {/* Star progress */}
+      <div className="rounded-2xl bg-white border-2 border-slate-100 p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-bold text-slate-600">
+            שאלה <span className="text-2xl font-black text-slate-800">{currentIndex + 1}</span> מתוך {gameQuestions.length}
           </p>
-          <div className="flex gap-1">
-            {gameQuestions.map((_, i) => (
+          <p className="text-sm font-bold text-emerald-600">
+            {answeredCount} ענית ✓
+          </p>
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {gameQuestions.map((_, i) => {
+            const c = QUESTION_COLORS[i % QUESTION_COLORS.length];
+            const isAnswered = !!answers[gameQuestions[i].id]?.trim();
+            const isCurrent = i === currentIndex;
+            return (
               <div
                 key={i}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  i < currentIndex
-                    ? "bg-green-400 w-4"
-                    : i === currentIndex
-                    ? "bg-indigo-500 w-6"
-                    : "bg-slate-200 w-2"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-          <div
-            className="h-full rounded-full bg-indigo-500 transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+                className={`rounded-full transition-all duration-300 ${
+                  isAnswered
+                    ? `${c.badge} w-7 h-7 shadow-sm`
+                    : isCurrent
+                    ? `${c.badge} w-8 h-8 ring-4 ring-offset-1 ${c.glow}`
+                    : "bg-slate-200 w-5 h-5"
+                } flex items-center justify-center`}
+              >
+                {isAnswered && <span className="text-white text-xs font-black">✓</span>}
+                {isCurrent && !isAnswered && <span className="text-white text-xs font-black">{i + 1}</span>}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Encouragement toast */}
       <div
         className={`transition-all duration-300 overflow-hidden ${
-          encouragement ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
+          encouragement ? "max-h-16 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-2 text-center text-sm font-medium text-green-700">
-          {encouragement}
+        <div className="rounded-2xl bg-gradient-to-l from-green-400 to-emerald-400 px-4 py-3 text-center text-base font-bold text-white shadow-md shadow-green-200">
+          <span className="mr-2 text-xl">{encouragement?.icon}</span>
+          {encouragement?.text}
         </div>
       </div>
 
       {/* Question card */}
       <div
         key={animKey}
-        className={`rounded-2xl border border-indigo-200 bg-white p-6 shadow-sm ${
+        className={`rounded-3xl border-2 ${color.border} ${color.bg} p-6 shadow-lg ${color.glow} ${
           animDir === "right" ? "slide-in-right" : "slide-in-left"
         }`}
       >
-        <div className="flex items-start gap-3 mb-4">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-base font-bold text-indigo-600">
-            {currentIndex + 1}
-          </span>
-          <p className="font-medium text-slate-800 leading-relaxed pt-1 text-base">
-            {current.text}
-          </p>
+        {/* Question icon + number */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${color.badge} shadow-md text-2xl`}>
+            {questionIcon}
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">שאלה {currentIndex + 1}</p>
+            <p className="text-xs text-slate-400">כתוב את התשובה שלך למטה</p>
+          </div>
         </div>
+
+        {/* Question text */}
+        <p className="text-base font-bold text-slate-800 leading-relaxed mb-5">
+          {current.text}
+        </p>
+
+        {/* Answer textarea */}
         <textarea
           value={answers[current.id] ?? ""}
           onChange={(e) =>
             setAnswers((prev) => ({ ...prev, [current.id]: e.target.value }))
           }
           rows={4}
-          placeholder="כתוב את תשובתך כאן..."
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all resize-none"
+          placeholder="✍️  כתוב את התשובה שלך כאן..."
+          className={`w-full rounded-2xl border-2 ${color.border} ${color.textarea} px-4 py-3 text-base text-slate-800 placeholder-slate-400 ${color.focusBorder} focus:outline-none focus:ring-4 ${color.focusRing} transition-all resize-none font-medium`}
           autoFocus
         />
+
+        {/* Answered checkmark */}
+        {answers[current.id]?.trim() && (
+          <div className="mt-3 flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white text-xs font-black">✓</div>
+            <p className="text-sm font-semibold text-green-600">תשובה נשמרה!</p>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
@@ -197,7 +266,7 @@ export function TaskView({
         {!isFirst && (
           <button
             onClick={() => navigate("prev")}
-            className="flex-1 rounded-2xl border border-slate-200 bg-white py-3.5 font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+            className={`flex-1 rounded-2xl border-2 ${color.prevBtn} py-3.5 text-base font-bold transition-all hover:shadow-sm`}
           >
             ← הקודם
           </button>
@@ -206,15 +275,16 @@ export function TaskView({
         {!isLast ? (
           <button
             onClick={() => navigate("next")}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 font-semibold text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all hover:-translate-y-0.5"
+            className={`flex-1 flex items-center justify-center gap-2 rounded-2xl ${color.btn} py-3.5 text-base font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl`}
           >
-            הבא →
+            הבא ←
+            <span className="text-xl">✨</span>
           </button>
         ) : (
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 font-semibold text-white shadow-lg shadow-green-200 disabled:opacity-50 hover:bg-green-700 transition-all hover:-translate-y-0.5"
+            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-green-500 to-emerald-500 py-3.5 text-base font-bold text-white shadow-lg shadow-green-200 disabled:opacity-50 hover:from-green-600 hover:to-emerald-600 transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             {loading ? (
               <>
@@ -223,22 +293,18 @@ export function TaskView({
               </>
             ) : (
               <>
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                סיימתי — שלח הגשה
+                <span className="text-xl">🎊</span>
+                סיימתי! שלח
               </>
             )}
           </button>
         )}
       </div>
 
-      {/* Skip indicator */}
-      {!answers[current.id]?.trim() && isLast && (
-        <p className="text-center text-xs text-slate-400">
-          ניתן לשלוח גם ללא מענה על כל השאלות
-        </p>
-      )}
+      {/* Bottom hint */}
+      <p className="text-center text-xs text-slate-400">
+        אפשר לחזור אחורה ולשנות תשובות בכל עת
+      </p>
     </div>
   );
 }
