@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), "uploads");
+    const uploadsDir = "/tmp";
     await fs.mkdir(uploadsDir, { recursive: true });
 
     const uniqueId = nanoid(10);
