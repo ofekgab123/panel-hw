@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# מערכת משימות ממוחשבת
 
-## Getting Started
+מערכת להמרת מסמכי Word ו-PDF למשימות ממוחשבת עם מעקב הגשות תלמידים.
 
-First, run the development server:
+## התקנה
+
+```bash
+npm install
+npx prisma migrate dev  # אם צריך ליצור/לעדכן את מסד הנתונים
+```
+
+## הרצה
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+פתח [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## שימוש
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### מורה
+1. גלוש ל-[http://localhost:3000/teacher](http://localhost:3000/teacher)
+2. לחץ על "הוספת משימה חדשה"
+3. בחר פורמט (PDF או Word), הזן שם משימה, והעלה קובץ
+4. המערכת תחלץ שאלות אוטומטית - בדוק ואישר
+5. העתק את הקישור ושלח לתלמידים
 
-## Learn More
+### תלמיד
+1. פתח את הקישור שקיבלת (למשל `/task/abc123`)
+2. הזן שם מלא וכיתה
+3. ענה על השאלות ולחץ "סיימתי - שלח הגשה"
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### צפייה בהגשות
+בפאנל המורה, לחץ "צפה בהגשות" על כל משימה כדי לראות את כל התלמידים והתשובות שלהם.
+# panel-hw
